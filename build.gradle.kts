@@ -34,6 +34,9 @@ dependencies {
 
     implementation("io.insert-koin:koin-ktor:3.4.3")
 
+    implementation("io.ktor:ktor-server-auth:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
+
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
@@ -44,6 +47,8 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-host-common-jvm:2.3.3")
     implementation("io.ktor:ktor-server-status-pages-jvm:2.3.3")
+    implementation("io.ktor:ktor-server-auth-jvm:2.3.3")
+    implementation("io.ktor:ktor-server-auth-jwt-jvm:2.3.3")
 
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")

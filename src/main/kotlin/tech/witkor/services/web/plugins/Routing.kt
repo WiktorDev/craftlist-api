@@ -7,23 +7,23 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import tech.witkor.services.web.entities.ErrorEntity
+import tech.witkor.services.web.routing.authRouting
 import tech.witkor.services.web.routing.serversRouting
 
 fun Application.configureRouting() {
     routing {
         route("api") {
             serversRouting()
+            authRouting()
         }
     }
 
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             if (cause is BadRequestException) {
-                call.response.status(HttpStatusCode.BadRequest)
-                call.respond(ErrorEntity(400, cause.message))
+                ErrorEntity(400, cause.message).show(call)
             }
-            call.response.status(HttpStatusCode.InternalServerError)
-            call.respond(ErrorEntity(500, "500: $cause"))
+            ErrorEntity(500, "500: $cause").show(call)
         }
     }
 }

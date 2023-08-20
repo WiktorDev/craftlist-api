@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import org.koin.ktor.plugin.Koin
 import tech.witkor.services.web.coroutines.Coroutine
 import tech.witkor.services.web.coroutines.RefreshServersCoroutine
+import tech.witkor.services.web.plugins.configureAuthentication
 import tech.witkor.services.web.plugins.configureDatabases
 import tech.witkor.services.web.plugins.configureRouting
 import tech.witkor.services.web.plugins.configureSerialization
@@ -15,12 +16,13 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    configureSerialization()
-    configureRouting()
-
     install(Koin){
         modules(configureDatabases())
+        modules(configureAuthentication())
     }
+
+    configureSerialization()
+    configureRouting()
 
     launch {
         listOf<Coroutine>(

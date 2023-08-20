@@ -89,19 +89,15 @@ class ServerRepository(database: Database) {
 
     suspend fun create(server: CreateServerDto): Int = dbQuery {
         try {
-            val serverInfoId = ServerInfo.insertAndGetId {
-
-            }
-            Server.insert {
+            Server.insertIgnore {
                 it[followers] = 0
                 it[address] = server.address
                 it[modes] = server.modes.joinToString("||")
                 it[versions] = server.versions.joinToString("||")
-                it[info] = serverInfoId
+                it[info] = ServerInfo.insertAndGetId {  }
             }.insertedCount
         } catch (ex: SQLException) { 0 }
     }
-
     suspend fun findByAddress(address: String): ExposedServer? {
         return dbQuery {
             Server.select { Server.address eq address }
