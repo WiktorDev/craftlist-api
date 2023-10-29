@@ -5,7 +5,7 @@ enum class ServerMode {
     WATER_BLOCK, ONE_BLOCK, MODS, VANILLA, RPG, PVP, SKY_GEN, BED_WARS, BOX_PVP, SKY_WARS, GUILDS, MEGA_DROP, EASY_HC, PARKOUR, MINI_GAMES;
 
     companion object {
-        private fun mapping(): Map<ServerMode, String> {
+        fun mapping(): Map<ServerMode, String> {
             return mapOf(
                 SURVIVAL to "Survival",
                 ANARCHY to "Anarchia SMP",

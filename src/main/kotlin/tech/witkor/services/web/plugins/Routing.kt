@@ -12,6 +12,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MissingFieldException
 import tech.witkor.services.web.entities.ErrorEntity
 import tech.witkor.services.web.routing.authRouting
+import tech.witkor.services.web.routing.configRouting
 import tech.witkor.services.web.routing.serversRouting
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -20,6 +21,7 @@ fun Application.configureRouting() {
         route("api") {
             serversRouting()
             authRouting()
+            configRouting()
         }
     }
 

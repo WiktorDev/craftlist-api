@@ -9,7 +9,6 @@ import tech.witkor.services.web.repositories.ExposedUser
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
