@@ -5,10 +5,7 @@ import kotlinx.coroutines.launch
 import org.koin.ktor.plugin.Koin
 import tech.witkor.services.web.coroutines.Coroutine
 import tech.witkor.services.web.coroutines.RefreshServersCoroutine
-import tech.witkor.services.web.plugins.configureAuthentication
-import tech.witkor.services.web.plugins.configureDatabases
-import tech.witkor.services.web.plugins.configureRouting
-import tech.witkor.services.web.plugins.configureSerialization
+import tech.witkor.services.web.plugins.*
 import kotlin.time.Duration.Companion.minutes
 
 fun main(args: Array<String>) {
@@ -18,6 +15,7 @@ fun main(args: Array<String>) {
 fun Application.module() {
     install(Koin){
         modules(configureDatabases())
+        modules(configureHttpClient())
         modules(configureAuthentication())
     }
 
