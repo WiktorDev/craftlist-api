@@ -13,8 +13,8 @@ import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import tech.witkor.services.web.routing.dto.CreateServerDto
-import tech.witkor.services.web.routing.dto.PaginationDto
 import tech.witkor.services.web.utilities.ServerMode
+import tech.witkor.services.web.utilities.pagination.PaginationDto
 import java.lang.Exception
 import java.sql.SQLException
 import java.time.LocalDateTime

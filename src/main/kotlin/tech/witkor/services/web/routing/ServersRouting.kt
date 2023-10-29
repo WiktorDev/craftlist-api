@@ -12,8 +12,9 @@ import tech.witkor.services.web.entities.ErrorEntity
 import tech.witkor.services.web.repositories.ServerRepository
 import tech.witkor.services.web.repositories.UserRepository
 import tech.witkor.services.web.routing.dto.CreateServerDto
-import tech.witkor.services.web.routing.dto.PaginationDto
 import tech.witkor.services.web.utilities.extractEmail
+import tech.witkor.services.web.utilities.pagination.createPagination
+import tech.witkor.services.web.utilities.pagination.paginationParams
 
 fun Route.serversRouting() {
     val repository by inject<ServerRepository>()
@@ -21,8 +22,10 @@ fun Route.serversRouting() {
 
     route("/servers") {
         get {
-            val pagination = PaginationDto.from(call.request)
-            call.respond(repository.fetchPagedServers(pagination))
+            val pagination = paginationParams(call)
+            call.respond(
+                createPagination(repository.fetchPagedServers(pagination), pagination)
+            )
         }
         authenticate("auth-jwt") {
             post {
