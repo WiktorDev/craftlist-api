@@ -12,3 +12,10 @@ data class ErrorEntity(val code: Int, val message: String?) {
         call.respond(this)
     }
 }
+@Serializable
+data class ErrorsEntity(val code: Int, val errors: Map<String, String>) {
+    suspend fun show(call: ApplicationCall) {
+        call.response.status(HttpStatusCode.fromValue(this.code))
+        call.respond(this)
+    }
+}

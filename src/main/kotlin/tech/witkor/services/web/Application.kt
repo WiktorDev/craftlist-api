@@ -6,6 +6,7 @@ import org.koin.ktor.plugin.Koin
 import tech.witkor.services.web.coroutines.Coroutine
 import tech.witkor.services.web.coroutines.RefreshServersCoroutine
 import tech.witkor.services.web.plugins.*
+import tech.witkor.services.web.services.ServerService
 import kotlin.time.Duration.Companion.minutes
 
 fun main(args: Array<String>) {
@@ -17,6 +18,10 @@ fun Application.module() {
         modules(configureDatabases())
         modules(configureHttpClient())
         modules(configureAuthentication())
+
+        modules(org.koin.dsl.module {
+            single<ServerService> { ServerService() }
+        })
     }
 
     configureSerialization()

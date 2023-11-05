@@ -3,52 +3,58 @@ package tech.witkor.services.web.repositories
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import tech.witkor.services.web.utilities.ServerMode
+import tech.witkor.services.web.models.User
+import tech.witkor.services.web.models.Users
+import tech.witkor.services.web.services.UserProfileResponse
 
-@Serializable
-data class ExposedUser(
-    val id: Int,
-    val email: String,
-    val username: String
-) {
-    companion object {
-        fun fromRow(row: ResultRow): ExposedUser {
-            return ExposedUser(
-                row[UserRepository.User.id].value,
-                row[UserRepository.User.email],
-                row[UserRepository.User.username]
-            )
-        }
-    }
-}
+//@Serializable
+//data class ExposedUser(
+//    val id: Int,
+//    val email: String,
+//    val username: String
+//) {
+//    companion object {
+//        fun fromRow(row: ResultRow): ExposedUser {
+//            return ExposedUser(
+//                row[UserRepository.User.id].value,
+//                row[UserRepository.User.email],
+//                row[UserRepository.User.username]
+//            )
+//        }
+//    }
+//}
 
 class UserRepository(database: Database) {
-    object User : IntIdTable("users") {
-        val email = varchar("email", 64)
-        val username = varchar("username", 64)
-    }
-
     init {
         transaction(database) {
-            SchemaUtils.create(User)
-            SchemaUtils.createMissingTablesAndColumns(User)
+            SchemaUtils.createMissingTablesAndColumns(Users)
         }
     }
 
     suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
 
-    suspend fun findByEmail(email: String): ExposedUser? {
-        return dbQuery {
-            User.select { User.email eq email }
-                .map { ExposedUser.fromRow(it) }
-                .singleOrNull()
+    suspend fun findByEmail(email: String): User? = dbQuery {
+        Users.select { Users.email eq email }
+            .map { User.wrapRow(it) }
+            .singleOrNull()
+    }
+    fun create(email: String, name: String) : User? = transaction {
+        Users.insert {
+            it[Users.email] = email
+            it[username] = name
+        }.resultedValues!!
+            .map { User.wrapRow(it) }
+            .singleOrNull()
+    }
+    suspend fun createIfNotExists(userProfileResponse: UserProfileResponse): User {
+        var user = this.findByEmail(userProfileResponse.email)
+        if (user == null) {
+            user = this.create(userProfileResponse.email, userProfileResponse.username)
         }
+        return user!!
     }
 }

@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.server.config.*
-import tech.witkor.services.web.repositories.ExposedUser
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import io.ktor.client.request.*
@@ -13,6 +12,7 @@ import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import tech.witkor.services.web.models.User
 
 @Serializable
 data class AccessTokenRequest(
@@ -37,7 +37,7 @@ class AuthService(private val config: ApplicationConfig) : KoinComponent {
         return config.propertyOrNull("ktor.$property")?.getString() ?: ""
     }
 
-    fun createToken(user: ExposedUser): String {
+    fun createToken(user: User): String {
         return JWT.create()
             .withAudience("")
             .withIssuer("")

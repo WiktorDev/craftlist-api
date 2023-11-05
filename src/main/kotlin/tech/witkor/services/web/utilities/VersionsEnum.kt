@@ -1,5 +1,8 @@
 package tech.witkor.services.web.utilities
 
+import java.lang.IllegalArgumentException
+
+@Suppress("UNUSED_EXPRESSION")
 enum class VersionsEnum {
     V1_7, V1_7_R2, V_1_7_R10, V1_8, V1_8_R8, V1_9, V1_10, V1_11, V1_12, V1_12_R2, V1_13, V1_14, V1_15, V1_16, V1_16_R4, V1_16_R5,
     V1_17, V1_17_R1, V1_18, V1_18_R1, V1_18_R2, V1_19, V1_19_R2, V1_19_R3, V1_20, V1_20_R1, V1_20_R2;
@@ -38,6 +41,12 @@ enum class VersionsEnum {
         }
         fun get(versionsEnum: VersionsEnum): String {
             return this.mapping().get(versionsEnum).toString();
+        }
+        fun isValid(version: String): Boolean {
+            return try {
+                VersionsEnum.valueOf(version)
+                true
+            } catch (e: IllegalArgumentException) { false }
         }
     }
 }

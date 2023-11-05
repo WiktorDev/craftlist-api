@@ -1,5 +1,7 @@
 package tech.witkor.services.web.utilities
 
+import java.lang.IllegalArgumentException
+
 enum class ServerMode {
     SURVIVAL, ANARCHY, ECONOMY, LIFE_STEAL, CREATIVE, FREE_BUILD, EARTH_SMP, REAL_LIFE, HARDCORE, CAVE_BLOCK, CASH_BLOCK,
     WATER_BLOCK, ONE_BLOCK, MODS, VANILLA, RPG, PVP, SKY_GEN, BED_WARS, BOX_PVP, SKY_WARS, GUILDS, MEGA_DROP, EASY_HC, PARKOUR, MINI_GAMES;
@@ -38,6 +40,12 @@ enum class ServerMode {
 
         fun get(serverMode: ServerMode): String {
             return this.mapping().get(serverMode).toString();
+        }
+        fun isValid(version: String): Boolean {
+            return try {
+                ServerMode.valueOf(version)
+                true
+            } catch (e: IllegalArgumentException) { false }
         }
     }
 }
