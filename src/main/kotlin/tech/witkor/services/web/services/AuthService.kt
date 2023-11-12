@@ -8,6 +8,7 @@ import io.ktor.server.config.*
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
@@ -63,7 +64,7 @@ class AuthService(private val config: ApplicationConfig) : KoinComponent {
         return response.body()
     }
     suspend fun getProfile(token: String): UserProfileResponse? {
-        val response = this.httpClient.get("https://id.yshop.pl/api/auth/me?useHeaders=true") {
+        val response = this.httpClient.get("https://id.yshop.pl/api/auth/me") {
             headers {
                 append("Authorization", "Bearer $token")
             }

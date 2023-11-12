@@ -9,6 +9,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import tech.witkor.services.web.entities.ErrorEntity
 import tech.witkor.services.web.entities.ErrorsEntity
 import tech.witkor.services.web.entities.exceptions.ConflictException
+import tech.witkor.services.web.entities.exceptions.UnauthorizedException
 import tech.witkor.services.web.entities.exceptions.ValidationException
 import tech.witkor.services.web.routing.authRouting
 import tech.witkor.services.web.routing.configRouting
@@ -30,6 +31,7 @@ fun Application.configureRouting() {
                 is BadRequestException -> ErrorEntity(400, cause.message).show(call)
                 is NotFoundException -> ErrorEntity(404, cause.message).show(call)
                 is ConflictException -> ErrorEntity(409, cause.message).show(call)
+                is UnauthorizedException -> ErrorEntity(401, cause.message).show(call)
                 is ValidationException -> {
                     val output = cause.message!!.replaceFirst("{", "").replace("}", "")
                         .split(",")
@@ -40,7 +42,7 @@ fun Application.configureRouting() {
                 is NumberFormatException -> ErrorEntity(400, "Invalid number format! ${cause.message}").show(call)
                 else -> {
                     ErrorEntity(500, "500: $cause").show(call)
-                    cause.printStackTrace()
+//                    cause.printStackTrace()
                 }
             }
         }

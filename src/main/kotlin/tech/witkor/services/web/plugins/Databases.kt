@@ -16,9 +16,11 @@ fun Application.configureDatabases(): Module {
 
     val flyway = Flyway.configure()
         .dataSource(dataSourceUri, property("username"), property("password"))
-        .locations("db/migration")
+        .locations("database/migrations")
         .load()
-    flyway.migrate()
+    flyway.migrate().migrations.forEach {
+        println(it.filepath)
+    }
 
     val database = Database.connect(
         url = dataSourceUri,

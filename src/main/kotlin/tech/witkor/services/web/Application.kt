@@ -7,7 +7,7 @@ import tech.witkor.services.web.coroutines.Coroutine
 import tech.witkor.services.web.coroutines.RefreshServersCoroutine
 import tech.witkor.services.web.plugins.*
 import tech.witkor.services.web.services.ServerService
-import kotlin.time.Duration.Companion.minutes
+import tech.witkor.services.web.services.TokenService
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
@@ -21,6 +21,7 @@ fun Application.module() {
 
         modules(org.koin.dsl.module {
             single<ServerService> { ServerService() }
+            single<TokenService>{ TokenService() }
         })
     }
 

@@ -25,6 +25,8 @@ repositories {
 }
 
 dependencies {
+    implementation("dnsjava:dnsjava:3.5.2")
+
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
 //    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
@@ -50,7 +52,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core:8.2.0")
 
     implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+//    implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-host-common-jvm:2.3.3")
     implementation("io.ktor:ktor-server-status-pages-jvm:2.3.3")
     implementation("io.ktor:ktor-server-auth-jvm:2.3.3")

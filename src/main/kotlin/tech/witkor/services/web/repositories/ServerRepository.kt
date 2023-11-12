@@ -1,83 +1,55 @@
 package tech.witkor.services.web.repositories
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import tech.witkor.services.web.models.Server
-import tech.witkor.services.web.models.Servers
-import tech.witkor.services.web.models.ServersInfo
+import tech.witkor.services.web.entities.exceptions.ConflictException
+import tech.witkor.services.web.models.*
 import tech.witkor.services.web.routing.servers.dto.CreateServerDto
-import tech.witkor.services.web.utilities.ServerMode
 import tech.witkor.services.web.utilities.pagination.PaginationDto
-import java.lang.Exception
 import java.sql.SQLException
-
-//@Serializable
-//data class ExposedServer(
-//    val id: Int,
-//    val followers: Int,
-//    val address: String,
-//    val modes: List<ServerMode>,
-//    val versions: List<String>,
-//    val info: ExposedServerInfo?
-//) {
-//    companion object {
-//        fun fromRow(row: ResultRow): ExposedServer {
-//            return ExposedServer(
-//                row[ServerRepository.Server.id].value,
-//                row[ServerRepository.Server.followers],
-//                row[ServerRepository.Server.address],
-//                row[ServerRepository.Server.modes].split("||").map { ServerMode.valueOf(it) },
-//                row[ServerRepository.Server.versions].split("||"),
-//                ExposedServerInfo.fromRow(row)
-//            )
-//        }
-//    }
-//}
-//
-//@Serializable
-//data class ExposedServerInfo(
-//    val id: Int,
-//    val onlinePlayers: Int,
-//    val maxPlayers: Int
-//) {
-//    companion object {
-//        fun fromRow(row: ResultRow): ExposedServerInfo? {
-//            return try {
-//                ExposedServerInfo(
-//                    row[ServerRepository.ServerInfo.id].value,
-//                    row[ServerRepository.ServerInfo.onlinePlayers],
-//                    row[ServerRepository.ServerInfo.maxPlayers]
-//                )
-//            } catch (e: Exception) { null }
-//        }
-//    }
-//}
-
 
 class ServerRepository(database: Database) {
     init {
         transaction(database) {
-            SchemaUtils.createMissingTablesAndColumns(Servers)
-            SchemaUtils.createMissingTablesAndColumns(ServersInfo)
+            val tables = arrayOf(Servers, ServersInfo, Tokens)
+
+            SchemaUtils.createMissingTablesAndColumns(*tables)
+            SchemaUtils.statementsRequiredToActualizeScheme(*tables).forEach {
+                println("STMT: $it")
+            }
         }
     }
 
     suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
 
-    fun create(dto: CreateServerDto): Boolean = transaction {
+    fun create(dto: CreateServerDto){
         try {
-            Servers.insertIgnore {
-                it[hostname] = dto.hostname
-                it[port] = dto.port
-                it[modes] = dto.modes.joinToString("||")
-                it[versions] = dto.versions.joinToString("||")
-            }.insertedCount > 0
-        } catch (ex: SQLException) { false }
+            transaction {
+                Server.new {
+                    hostname = dto.hostname
+                    port = dto.port
+                    modes = dto.modes.joinToString("||")
+                    versions = dto.versions.joinToString("||")
+                    serverInfo = ServerInfo.new {
+                        onlinePlayers = 0
+                        maxPlayers = 0
+                    }
+                }
+            }
+        } catch (ex: SQLException) {
+            throw ConflictException("Server with this hostname already exists!")
+        }
+    }
+    fun fetchPagedServers(pagination: PaginationDto): List<ExposedServer> = transaction {
+        (Servers innerJoin ServersInfo).selectAll().limit(pagination.size, pagination.skip()).map {
+            exposeServer(Server.wrapRow(it))
+        }
+//        Servers.leftJoin(ServersInfo).selectAll().limit(pagination.size, pagination.skip()).map {
+//            exposeServer(Server.wrapRow(it))
+//        }
     }
     fun findByHostname(hostname: String): Server? = transaction {
         Servers.select { Servers.hostname eq hostname }

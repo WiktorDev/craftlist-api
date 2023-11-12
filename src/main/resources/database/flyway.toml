@@ -1,0 +1,26 @@
+databaseType = "MariaDb"
+name = "testt"
+id = "4c00b339-9f79-442a-af34-ae34a8994bf9"
+
+[flywayDesktop]
+developmentEnvironment = "development"
+shadowEnvironment = "shadow"
+schemaModel = "./schema-model"
+
+[redgateCompare]
+filterFile = "filter.rgf"
+
+[redgateCompare.mysql.options.ignores]
+ignoreNewlinesInTextObjects = "off"
+
+[flyway]
+mixed = true
+outOfOrder = true
+locations = [ "filesystem:migrations" ]
+validateMigrationNaming = true
+
+[environments.target1]
+url = "jdbc:mysql://localhost:3306/mclist"
+user = "root"
+password = "12345678"
+schemas = [ "mclist" ]

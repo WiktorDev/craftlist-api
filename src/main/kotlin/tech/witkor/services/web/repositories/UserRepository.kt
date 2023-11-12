@@ -37,11 +37,12 @@ class UserRepository(database: Database) {
     suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
 
-    suspend fun findByEmail(email: String): User? = dbQuery {
+    fun findByEmail(email: String): User? = transaction {
         Users.select { Users.email eq email }
             .map { User.wrapRow(it) }
             .singleOrNull()
     }
+
     fun create(email: String, name: String) : User? = transaction {
         Users.insert {
             it[Users.email] = email
